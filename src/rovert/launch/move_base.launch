@@ -1,0 +1,29 @@
+<launch>
+
+   <master auto="start"/>
+ <!-- Run the map server --> 
+    <!-- node name="map_server" pkg="map_server" type="map_server" args="$(find rover_2dnav)/lab_medidas.yaml"/ -->
+
+<!-- Aca se deberia launchear un package que haga localization si queremos mejorar la de odom
+
+	<node pkg="amcl" type="amcl" name="amcl">
+		<param name="odom_model_type" value="omni"/> 			 omni-corrected?
+		<param name="odom_frame_id" value="odom"/>
+    	<param name="base_frame_id" value="base_link"/>
+    	<param name="use_map_topic" value="true"/>
+    	<param name="min_particles" value="100"/>
+    	<param name="max_particles" value="5000"/>
+--> 
+
+	<node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+	   	<rosparam file="$(find rover_2dnav)/move_base_config/costmap_common_params.yaml" command="load" ns="global_costmap" /> 
+	    <rosparam file="$(find rover_2dnav)/move_base_config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+	    <rosparam file="$(find rover_2dnav)/move_base_config/local_costmap_params.yaml" command="load" />
+	    <rosparam file="$(find rover_2dnav)/move_base_config/global_costmap_params.yaml" command="load" /> 
+	    <rosparam file="$(find rover_2dnav)/move_base_config/base_local_planner_params_v2.yaml" command="load" />
+	    <rosparam file="$(find rover_2dnav)/move_base_config/base_global_planner_params.yaml" command="load" />
+ 	</node>
+
+ 	<node type="rviz" name="rviz" pkg="rviz"/>
+
+</launch> 

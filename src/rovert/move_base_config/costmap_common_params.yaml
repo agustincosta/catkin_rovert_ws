@@ -1,0 +1,27 @@
+footprint: [[0.18, 0.21], [0.18, -0.21], [-0.18, -0.21], [-0.18, 0.21]]
+#footprint_padding: 0.0
+
+inflation_layer:
+  inflation_radius: 1.75
+  cost_scaling_factor: 2.58
+
+obstacle_layer:
+  max_obstacle_height: 0.80
+  obstacle_range: 5           #A cuanto detecta obstaculos: Lidar range - algo
+  raytrace_range: 3           #A que distancia se dibuja en el mapa si hay espacio libre adelante
+  map_type: costmap
+
+  track_unknown_space: true   #Necesario
+
+  observation_sources: laser_scan_sensor
+  laser_scan_sensor: {sensor_frame: base_laser, data_type: LaserScan, topic: scan, marking: true, clearing: true}
+
+
+range_sensor_layer:
+  clear_threshold:    0.2       #Celdas con probabilidad menor que esta son marcadas como libres
+  mark_threshold:     0.8       #Celdas con probabilidad mayor que esta son marcadas como obstaculos
+  clear_on_max_reading: true    #Clear the sensor reading on max range
+  no_reading_timeout: 0         #Si en este tiempo no le llega un msg nuevo imprime warning y marca la layer como "not current"
+  topics: ["/us_adel", "/us_der", "/us_izq", "/us_atr"]
+
+

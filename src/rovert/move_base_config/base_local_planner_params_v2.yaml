@@ -1,0 +1,69 @@
+base_local_planner: "dwa_local_planner/DWAPlannerROS"
+
+controller_frequency: 10.0      # 20.0
+controller_patience:  15.0      # 15.0
+
+DWAPlannerROS:
+
+  holonomic_robot: true
+
+  # Tolerances:                  
+  yaw_goal_tolerance: 0.05      # Tolerancia de orientacion final (rad) -- 0.05 
+  xy_goal_tolerance:  0.10      # Tolerancia de posicion final de x e y (m) -- 0.10
+  latch_xy_goal_tolerance: true # Si es true el robot al alcanzar su posicion final en x,y gira en posicion para alcanzar la orientacion
+                                # aunque esto lo saque de su posicion x,y 
+
+  # Forward simulation:          
+  use_dwa: true                 # True
+  sim_time: 4                   # Tiempo para simular hacia adelante trayectorias (s) -- 1.7
+  sim_granularity: 0.025        # Tamaño del paso entre puntos de una trayectoria (m) -- 0.025
+  angular_sim_granularity: 0.017 # 0.10 (1 degree = 0.017 rad)
+  vx_samples: 20                # Cantidad de muestras para usar explorando el espacio de velocidad x -- 3
+  vy_samples: 10                # Cantidad de muestras para usar explorando el espacio de velocidad y -- 10
+  vth_samples: 40               # Cantidad de muestras para usar explorando el espacio de velocidad x -- 20
+  controller_frequency: 10.0    # Frecuencia a la que se llama a este controlador, si se usa move_base no 
+                                # es necesario definirlo porque tiene preferencia el otro -- 20.0Hz
+
+  #Scoring:
+
+  # cost =
+  # path_distance_bias * (distance to path from the endpoint of the trajectory in meters)
+  # + goal_distance_bias * (distance to local goal from the endpoint of the trajectory in meters)
+  # + occdist_scale * (maximum obstacle cost along the trajectory in obstacle cost (0-254))
+
+  meter_scoring: false          # Is this even taken into account?
+  path_distance_bias: 50.00      # El peso de que tanto deberia mantenerse en el camino dado -- 32.0
+  goal_distance_bias: 16.0      # El peso de cuanto deberia intentar alcanzar la meta, tambien controla velocidad -- 24.0
+  occdist_scale: 0.01           # El peso de que tanto deberia intentar esquivar obstaculos -- 0.01
+  forward_point_distance: 0.325 # Distancia del centro del robot para poner un scoring point adicional (m) -- 0.325
+  stop_time_buffer: 0.20        # El tiempo que tiene que frenar el robot antes de una colision para considerar la trayectoria valida (s) -- 0.2
+  scaling_speed: 0.25           # La velocidad absoluta a partir de la cual se escala el footprint del robot (m/s) -- 0.25
+  max_scaling_factor: 0.20      # Maximo factor por el cual escalar la footprint del robot -- 0.2
+  heading_lookahead: 0.325
+  heading_scoring_timestep: 0.8
+  heading_scoring: false         # Is this even taken into account?
+  penalize_negative_x: false    # Is this even taken into account?
+
+  # Acceleration and velocity limits:
+  acc_lim_x: 2.0                # Limite de aceleracion x (m/s²) -- 2.5
+  acc_lim_y: 2.0                # Limite de aceleracion y (m/s²) -- 2.5
+  acc_lim_theta: 2.0            # Limite de aceleracion th (m/s²) -- 3.2
+
+  # max_trans_vel: 0.5          # Maximo absoluto de velocidad de traslacion (m/s²) -- 0.55
+  # min_trans_vel: 0.05         # Minimo absoluto de velocidad de traslacion (m/s²) -- 0.1
+  max_vel_x: +0.8               # Maxima velocidad +x (m/s) -- 0.55
+  min_vel_x: -0.4               # Minima velocidad +x (m/s) -- 0
+  max_vel_y: +0.4               # Maxima velocidad +y (m/s) -- 0.1
+  min_vel_y: -0.4               # Minima velocidad +y (m/s) -- -0.1
+
+  max_rot_vel: 2.0              # Maxima absoluta velocidad +th (rad/s) -- 1.0
+  min_rot_vel: 0.4              # Minima absoluta velocidad +th (rad/s) - 0.4
+
+  # Other                       
+  oscillation_reset_dist: 0.05  # Que tan lejos viaja hasta que se resetean flags de oscilacion (m) -- 0.05
+  oscillation_reset_angle: 0.20 # 0.20
+  oscillation_timeout: 5.0
+  prune_plan: false             # Define si se elimina el plan a medida que se recorre la trayectoria -- true
+  trans_stopped_vel: 0.1        # 0.1
+  rot_stopped_vel: 0.1          # 0.1
+  publish_cost_grid_pc: true    # false 

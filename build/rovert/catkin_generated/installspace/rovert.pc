@@ -1,0 +1,8 @@
+prefix=/home/ubuntu/catkin_rovert_ws/install
+
+Name: rovert
+Description: Description of rovert
+Version: 1.0.0
+Cflags: 
+Libs: -L/home/ubuntu/catkin_rovert_ws/install/lib 
+Requires: 

@@ -1,0 +1,8 @@
+prefix=/home/ubuntu/catkin_rovert_ws/devel
+
+Name: rover_2dnav
+Description: Description of rover_2dnav
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/ubuntu/catkin_rovert_ws/devel/lib 
+Requires: 

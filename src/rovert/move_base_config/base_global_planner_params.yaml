@@ -1,0 +1,15 @@
+base_global_planner: "global_planner/GlobalPlanner"
+
+GlobalPlanner:
+
+    allow_unknown: true
+
+    use_dijkstra: true
+    use_grid_path: false
+
+    visualize_potential: true
+    publish_potential: true
+
+    cost_factor: 0.55
+    neutral_cost: 66
+    lethal_cost: 253
