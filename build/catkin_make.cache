@@ -1,2 +1,0 @@
-rovert:ydlidar
--DCATKIN_DEVEL_PREFIX=/home/ubuntu/catkin_rovert_ws/devel -DCMAKE_INSTALL_PREFIX=/home/ubuntu/catkin_rovert_ws/install -G Unix Makefiles
