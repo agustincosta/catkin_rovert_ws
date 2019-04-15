@@ -13,6 +13,8 @@
 #include "MPU9250.h"
 #include <PID_v1.h>
 
+#include "HC-SR04-non-Blocking.h"
+
 #define WITH_IMU true
 #define CONTROL_ACTIVO true
 #define WITH_ULTRASOUND false
@@ -22,7 +24,7 @@
 #define BROADCAST_TF false
 
 
-#define CONTROL_SAMPLE_RATE                    500  //hz  PI SAMPLE RATE SETEADA POR FUNCION, NO TIENE IF en el LOOP
+#define CONTROL_SAMPLE_RATE    500  //hz  PI SAMPLE RATE SETEADA POR FUNCION, NO TIENE IF en el LOOP
 
 
 

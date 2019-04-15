@@ -26,6 +26,14 @@ float VEL_ANG_MAX_RUEDAS = 8.507;
 MPU9250 myIMU(MPU9250_ADDRESS, I2Cport, I2Cclock);
 #endif
 
+//Definicion de ultrasonidos (Trigger, Echo)
+USensor der(1, 2);
+USensor atr(3, 4);
+USensor izq(14, 15);
+USensor adel(24, 25);
+
+
+
 //Puse segun A y B
 Encoder rueda1(6,5);
 Encoder rueda2(7,8);
@@ -47,11 +55,7 @@ double w2_comando = 0;
 double w3_comando = 0;
 double w4_comando = 0;
 
-//Definicion de ultrasonidos (Trigger, Echo)
-UltraSonicDistanceSensor der(1, 2);
-UltraSonicDistanceSensor atr(3, 4);
-UltraSonicDistanceSensor izq(14, 15);
-UltraSonicDistanceSensor adel(24, 25);
+
 
 
 /*Variables para ultrasonidos*/
@@ -330,9 +334,12 @@ void initPID(){
   #endif
 }
 
+void initUS(){
+  
+}
 
 void setPinModes(){
-   pinMode(pwm_1, OUTPUT);
+  pinMode(pwm_1, OUTPUT);
   pinMode(dir_1, OUTPUT);
   pinMode(pwm_2, OUTPUT);
   pinMode(dir_2, OUTPUT);
@@ -479,8 +486,19 @@ void actualizacionDeVelocidadMotores(){
   }
 
 void medirUltrasonidos(){
-  #if PROMEDIADO
-  {
+ 
+    if(!adel.isMeasureReady() && !izq.isMeasureReady() && !der.isMeasureReady() && !atr.isMeasureReady()){
+        adel.startMeasure();
+        izq.startMeasure();
+        der.startMeasure();
+        atr.startMeasure();
+    }
+}
+
+void envioMensajeUltraSonidos(){
+ 
+
+    /*  //ESTO HAY QUE CAMBIARLO *********************************************
     dist_adel = 0;
     dist_izq = 0;
     dist_der = 0;
@@ -513,31 +531,38 @@ void medirUltrasonidos(){
     dist_izq /= muestras_us;
     dist_der /= muestras_us;
     dist_atr /= muestras_us; 
+    */
     
-  }
-  #else
-  {
-    float medida_adel = 0;
-    float medida_izq = 0;
-    float medida_der = 0;
-    float medida_atr = 0;
-
-    medida_adel = adel.measureDistanceCm()/100;
-    medida_izq = izq.measureDistanceCm()/100;
-    medida_der = der.measureDistanceCm()/100;
-    medida_atr = atr.measureDistanceCm()/100;
-
-    if (medida_adel<= 0 || medida_adel > us_max_range) {medida_adel = us_max_range;}
-    if (medida_izq <= 0 || medida_izq  > us_max_range) {medida_izq = us_max_range;}
-    if (medida_der <= 0 || medida_der  > us_max_range) {medida_der = us_max_range;}
-    if (medida_atr <= 0 || medida_atr  > us_max_range) {medida_atr = us_max_range;}
+   if(adel.isMeasureReady() && izq.isMeasureReady() && der.isMeasureReady() && atr.isMeasureReady()){
+        dist_adel = adel.lastMeasure()/100;
+        dist_izq = izq.lastMeasure()/100;
+        dist_der = der.lastMeasure()/100;
+        dist_atr = atr.lastMeasure()/100;
+        
+    		//Adelante
+    		us_adel_msg.range = dist_adel;
+    		us_adel_msg.header.seq++;
+    		us_adel_msg.header.stamp = nh.now();
+    		pub_us_adel.publish(&us_adel_msg);
     
-    dist_adel = medida_adel;
-    dist_izq = medida_izq;
-    dist_der = medida_der;
-    dist_atr = medida_atr;
-  }
-  #endif   
+    		//Izquierda
+    		us_izq_msg.range = dist_izq;
+    		us_izq_msg.header.seq++;
+    		us_izq_msg.header.stamp = nh.now();
+    		pub_us_izq.publish(&us_izq_msg);
+    
+    		//Derecha
+    		us_der_msg.range = dist_der;
+    		us_der_msg.header.seq++;
+    		us_der_msg.header.stamp = nh.now();
+    		pub_us_der.publish(&us_der_msg);
+    
+    		//Atras
+    		us_atr_msg.range = dist_atr;
+    		us_atr_msg.header.seq++;
+    		us_atr_msg.header.stamp = nh.now();
+    		pub_us_atr.publish(&us_atr_msg);
+   }
 }
 
 void medirIMUyMAG(){
@@ -751,32 +776,6 @@ void envioMensajeIMUyMAG(){
   mag_msg.header.seq++;
   mag_msg.header.stamp = nh.now();
   pub_mag.publish(&mag_msg);
-}
-
-void envioMensajeUltraSonidos(){
-  //Adelante
-  us_adel_msg.range = dist_adel/100;
-  us_adel_msg.header.seq++;
-  us_adel_msg.header.stamp = nh.now();
-  pub_us_adel.publish(&us_adel_msg);
-
-  //Izquierda
-  us_izq_msg.range = dist_izq/100;
-  us_izq_msg.header.seq++;
-  us_izq_msg.header.stamp = nh.now();
-  pub_us_izq.publish(&us_izq_msg);
-
-  //Derecha
-  us_der_msg.range = dist_der/100;
-  us_der_msg.header.seq++;
-  us_der_msg.header.stamp = nh.now();
-  pub_us_der.publish(&us_der_msg);
-
-  //Atras
-  us_atr_msg.range = dist_atr/100;
-  us_atr_msg.header.seq++;
-  us_atr_msg.header.stamp = nh.now();
-  pub_us_atr.publish(&us_atr_msg);
 }
 
 void staticTransforms(){

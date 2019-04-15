@@ -1,17 +1,19 @@
 #include "nucleo_rovert.h"
 
 #define WITH_IMU true
-#define WITH_ULTRASOUND false
+#define WITH_ULTRASOUND true
 #define CONTROL_ACTIVO true
 
-#define ODOMETRY_SAMPLE_RATE                   1000 //hz
-#define CONTROL_MOTOR_SPEED_FREQUENCY          100   //hz
+#define ODOMETRY_SAMPLE_RATE                   800 //hz
+#define CONTROL_MOTOR_SPEED_FREQUENCY          800   //hz
 #define IMU_SAMPLE_RATE                        100  //hz
 #define ULTRASONIDO_SAMPLE_RATE                5    //hz
 
 #define ODOMETRY_PUBLISH_FREQUENCY             100  //hz
 #define IMU_PUBLISH_FREQUENCY                  60  //hz
-#define ULTRASONIDO_PUBLISH_FREQUENCY          1    //hz
+#define ULTRASONIDO_PUBLISH_FREQUENCY          5    //hz
+
+
 
 static uint32_t tTime[7]; //Timer por componente para asegurar rates
 /************************************************************************
@@ -36,7 +38,7 @@ static uint32_t tTime[7]; //Timer por componente para asegurar rates
 
 void setup()
 { 
-  Serial.begin(115200);
+  Serial.begin(230400);
   while(!Serial){};
 
   
