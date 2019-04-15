@@ -12,6 +12,8 @@
 
 #include "interrupt_pins.h"
 
+#define DIS_MAX 400
+
 
 // All the data needed by interrupts is consolidated into this ugly struct
 // to facilitate assembly language optimizing of the speed critical update.
@@ -48,18 +50,30 @@ public:
 
 
 	inline int32_t startMeasure() {
+    //Serial.println("Start Measures");
+    //Serial.println(ultrasonicSensor.triggerPin);
 		noInterrupts();
-	
-		 
+
+    //digitalWrite(ultrasonicSensor.triggerPin, LOW);
+		//delayMicroseconds(1);
     digitalWrite(ultrasonicSensor.triggerPin, HIGH);
     delayMicroseconds(10);
     digitalWrite(ultrasonicSensor.triggerPin, LOW); 
-		
+    //ultrasonicSensor.startUS = micros(); //Por las dudas igual se rescribe en el pulso de subida
+		//Serial.println("Comienza medida");
 		interrupts();
 		return 0;
 	}
 
 	inline int32_t isMeasureReady() {
+    if(ultrasonicSensor.terminoMedicion == false && (micros()-ultrasonicSensor.startUS)/58.3 >DIS_MAX ){
+      //Serial.println("SePaso");
+      //Serial.println((micros()-ultrasonicSensor.startUS) /58.3);
+      ultrasonicSensor.distancia = DIS_MAX;
+      ultrasonicSensor.medidaLista = true;
+      ultrasonicSensor.terminoMedicion =true;
+    }
+	
 		return ultrasonicSensor.medidaLista;
 	}
 
@@ -72,16 +86,19 @@ public:
 
 private:
   HC_SR04_internal_state_t ultrasonicSensor;
+  int lastIDUsed  = 0;
 public:
 	static HC_SR04_internal_state_t * interruptArgs[CORE_NUM_INTERRUPT] ;
+  
 
 public:
 	// update() is not meant to be called from outside Encoder,
 	// but it is public to allow static interrupt routines.
 	// DO NOT call update() directly from sketches.
- 
+//int lastCall = 0;
 	static void update(HC_SR04_internal_state_t *arg) {
   noInterrupts();
+    //Serial.println("paso");
 		if(arg->terminoMedicion){
           arg->startUS = micros();
           arg->terminoMedicion = false;
@@ -92,7 +109,7 @@ public:
           arg->distancia = (arg->finishUS - arg->startUS)/58.3;
         } 
    interrupts();
-	}
+ 	}
 private:
 	// this giant function is an unfortunate consequence of Arduino's
 	// attachInterrupt function not supporting any way to pass a pointer

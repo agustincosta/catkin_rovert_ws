@@ -10,23 +10,24 @@ void setup() {
   Serial.println("Comienza prueba de libreria USensor");
   
   sensorUS1.startMeasure();
-  //sensorUS2.startMeasure();
+  sensorUS2.startMeasure();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
- while(!sensorUS1.isMeasureReady());
+if(sensorUS1.isMeasureReady()){
       Serial.print("US1: ");
       Serial.println(sensorUS1.lastMeasure()); 
-      sensorUS2.startMeasure();
-      
+      sensorUS1.startMeasure();
+ }
   
 
-  while(sensorUS2.isMeasureReady());
+  if(sensorUS2.isMeasureReady()){
       Serial.print("US2: ");
       Serial.println(sensorUS2.lastMeasure()); 
-      sensorUS1.startMeasure();
-  
+      sensorUS2.startMeasure();
+  }
+ delay(100);
 
   
 }
