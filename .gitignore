@@ -1,2 +1,10 @@
 
 build/
+
+devel/
+
+*.cmake
+
+*.stamp
+
+*.pc

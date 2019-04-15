@@ -16,12 +16,12 @@
 --> 
 
 	<node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
-	   	<rosparam file="$(find rover_2dnav)/move_base_config/costmap_common_params.yaml" command="load" ns="global_costmap" /> 
-	    <rosparam file="$(find rover_2dnav)/move_base_config/costmap_common_params.yaml" command="load" ns="local_costmap" />
-	    <rosparam file="$(find rover_2dnav)/move_base_config/local_costmap_params.yaml" command="load" />
-	    <rosparam file="$(find rover_2dnav)/move_base_config/global_costmap_params.yaml" command="load" /> 
-	    <rosparam file="$(find rover_2dnav)/move_base_config/base_local_planner_params_v2.yaml" command="load" />
-	    <rosparam file="$(find rover_2dnav)/move_base_config/base_global_planner_params.yaml" command="load" />
+	   	<rosparam file="$(find rovert)/move_base_config/costmap_common_params.yaml" command="load" ns="global_costmap" /> 
+	    <rosparam file="$(find rovert)/move_base_config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+	    <rosparam file="$(find rovert)/move_base_config/local_costmap_params.yaml" command="load" />
+	    <rosparam file="$(find rovert)/move_base_config/global_costmap_params.yaml" command="load" /> 
+	    <rosparam file="$(find rovert)/move_base_config/base_local_planner_params_v2.yaml" command="load" />
+	    <rosparam file="$(find rovert)/move_base_config/base_global_planner_params.yaml" command="load" />
  	</node>
 
  	<node type="rviz" name="rviz" pkg="rviz"/>

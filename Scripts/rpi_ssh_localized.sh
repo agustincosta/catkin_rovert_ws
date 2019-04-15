@@ -4,7 +4,7 @@ HOST_IP=${HOST_IP##*:}  #Retiene solo la parte luego de los ":"
 echo $HOST_IP
 USERNAME=ubuntu
 PASSWORD='ubuntu'
-HOST=ubiquityrobot
+HOST=ubiquityrobot.local
 SCRIPT="source catkin_ws/devel/setup.bash ; export ROS_MASTER_URI=http://${HOST_IP}:11311; roslaunch rover_2dnav rpi_localized_config.launch"
 
 trap ctrl_c INT
