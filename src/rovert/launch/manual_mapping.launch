@@ -7,7 +7,10 @@
     	<param name="map_frame" value="map"/>
     	<param name="map_update_interval" value="5.0"/> 		<!-- En segundos -->
     	<param name="throttle_scans" value="1"/> 				<!-- Procesa 1 escaneo de cada "throttle_scans" -->
-    	
     </node>
+
+    <node type="rviz" name="rviz" pkg="rviz"/>
+
+    <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" name="teleop" output="screen" launch-prefix="terminator -x"/>
 
 </launch>
