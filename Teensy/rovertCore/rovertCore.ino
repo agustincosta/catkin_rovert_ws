@@ -4,7 +4,7 @@
 #define WITH_ULTRASOUND true
 #define CONTROL_ACTIVO true
 
-#define ODOMETRY_SAMPLE_RATE                   800 //hz
+#define ODOMETRY_SAMPLE_RATE                   1000 //hz
 #define CONTROL_MOTOR_SPEED_FREQUENCY          800   //hz
 #define IMU_SAMPLE_RATE                        100  //hz
 #define ULTRASONIDO_SAMPLE_RATE                5    //hz
@@ -13,6 +13,7 @@
 #define IMU_PUBLISH_FREQUENCY                  60  //hz
 #define ULTRASONIDO_PUBLISH_FREQUENCY          5    //hz
 
+#define BAUDRATE 230400
 
 
 static uint32_t tTime[7]; //Timer por componente para asegurar rates
@@ -38,7 +39,7 @@ static uint32_t tTime[7]; //Timer por componente para asegurar rates
 
 void setup()
 { 
-  Serial.begin(230400);
+  Serial.begin(BAUDRATE);
   while(!Serial){};
 
   
@@ -55,7 +56,7 @@ void setup()
 
   /*************** Creacion de nodo ROS y publishers/subscirber *****************/
   {
-  initROSnodeWithMessages(115200);
+  initROSnodeWithMessages(BAUDRATE);
   }
 
   /**************** Definicion de PINES para control de motores *****************/
