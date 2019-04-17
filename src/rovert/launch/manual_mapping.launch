@@ -9,8 +9,6 @@
     	<param name="throttle_scans" value="1"/> 				<!-- Procesa 1 escaneo de cada "throttle_scans" -->
     </node>
 
-    <node type="rviz" name="rviz" pkg="rviz"/>
-
-    <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" name="teleop" output="screen" launch-prefix="terminator -x"/>
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find rovert)/Rviz/rviz_teleop_plugin.rviz"/>
 
 </launch>

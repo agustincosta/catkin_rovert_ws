@@ -20,6 +20,6 @@
 	    <rosparam file="$(find rovert)/move_base_config/base_global_planner_params.yaml" command="load" />
  	</node>
 
- 	<node type="rviz" name="rviz" pkg="rviz"/>
+ 	<node type="rviz" name="rviz" pkg="rviz" args="-d $(find rovert)/Rviz/rviz_fullscreen.rviz"/>
 
 </launch> 
