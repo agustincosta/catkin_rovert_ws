@@ -18,9 +18,14 @@ long encoderArray[4] = {0,0,0,0};
 
 //Parametros Rover
 float A = 0.16;
-float B = 0.095;
-float R = 0.1;
+float B = 0.0975;
+float R = 0.05;
 float VEL_ANG_MAX_RUEDAS = 8.507;
+
+  float radio1 = 0.05;   //Radio de las ruedas
+  float a1 = 0.16;      //Mitad del ancho del carro
+  float b1 = 0.0975;     //Mitad del largo del carro
+  //Todo en metros
 
 #if WITH_IMU
 MPU9250 myIMU(MPU9250_ADDRESS, I2Cport, I2Cclock);
@@ -371,16 +376,11 @@ void desplazamiento(double x, double y, double th, double w1, double w2, double 
   
   double dt = Ts;
 
-  float radio1 = 0.05;   //Radio de las ruedas
-  float a1 = 0.16;      //Mitad del ancho del carro
-  float b1 = 0.0975;     //Mitad del largo del carro
-  //Todo en metros
-
   
   //Ecuacion de velocidad relativa a partir de velocidades de ruedas
-  double vx = (radio1/4)*(-w1+w2-w3+w4);
-  double vy = (radio1/4)*(+w1+w2+w3+w4);
-  double vth = (radio1/(4*(a1+b1)))*(w1-w2-w3+w4);
+  double vx = (radio/4)*(-w1+w2-w3+w4);
+  double vy = (radio/4)*(+w1+w2+w3+w4);
+  double vth = (radio/(4*(a+b)))*(w1-w2-w3+w4);
   
   double dx = (vx * cos(th) - vy*sin(th))*dt;
   double dy = (vx * sin(th) + vy*cos(th))*dt;
