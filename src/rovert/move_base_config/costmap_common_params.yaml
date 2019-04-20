@@ -17,11 +17,11 @@ obstacle_layer:
   laser_scan_sensor: {sensor_frame: base_laser, data_type: LaserScan, topic: scan, marking: true, clearing: true}
 
 
-range_sensor_layer:
-  clear_threshold:    0.2       #Celdas con probabilidad menor que esta son marcadas como libres
-  mark_threshold:     0.8       #Celdas con probabilidad mayor que esta son marcadas como obstaculos
-  clear_on_max_reading: true    #Clear the sensor reading on max range
-  no_reading_timeout: 0         #Si en este tiempo no le llega un msg nuevo imprime warning y marca la layer como "not current"
-  topics: ["/us_adel", "/us_der", "/us_izq", "/us_atr"]
+#range_sensor_layer:
+#  clear_threshold:    0.2       #Celdas con probabilidad menor que esta son marcadas como libres
+#  mark_threshold:     0.8       #Celdas con probabilidad mayor que esta son marcadas como obstaculos
+#  clear_on_max_reading: true    #Clear the sensor reading on max range
+#  no_reading_timeout: 0.5         #Si en este tiempo no le llega un msg nuevo imprime warning y marca la layer como "not current"
+#  topics: ["/us_adel", "/us_der", "/us_izq", "/us_atr"]
 
 

@@ -109,12 +109,9 @@ def connection(ventana):
 
 		ssh.load_system_host_keys()
 
-		#ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 		ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 		
 		ssh.connect(hostname, username=username, password=password, look_for_keys=False)
-
-		#stdin, stdout, stderr = ssh.exec_command(command)
 
 		channel = ssh.get_transport().open_session()
 		channel.invoke_shell()
