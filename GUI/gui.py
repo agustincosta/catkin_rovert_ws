@@ -26,7 +26,7 @@ class SecondaryWindow(QtGui.QMainWindow):
 		self.close()
 
 	def mapSaver(self):
-		file = str(QtGui.QFileDialog.getSaveFileName(self, "Guardar mapa", ".yaml", "YAML File (*.yaml)"))
+		file = str(QtGui.QFileDialog.getSaveFileName(self, "Guardar mapa", "", "YAML File (*.yaml)"))
 		print(file)
 		os.system("rosrun map_server map_saver -f " + file)
 
