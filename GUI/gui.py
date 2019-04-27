@@ -91,7 +91,7 @@ class MainWindow(QtGui.QMainWindow):
 		os.system("rosnode kill -a")
 
 def connection(ventana):
-	hostname = "ubiquityrobot"
+	hostname = "ubiquityrobot.local"
 	port = 22
 	username = "ubuntu"
 	password = "ubuntu"
