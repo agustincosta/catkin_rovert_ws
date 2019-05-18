@@ -109,9 +109,8 @@ def connection(ventana):
 	s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, 
 	socket.SOCK_DGRAM)]][0][1]]) if l][0][0]
 	print host_ip
-	os.system('export ROS_IP=' + host_ip +';')
-	command = ' source catkin_ws/devel/setup.bash ; export ROS_MASTER_URI=http://'+ host_ip +':11311; roslaunch rover_2dnav rpi_localized_config.launch'
-
+	os.environ["ROS_IP"] = host_ip
+	
 	try:
 		ssh = paramiko.SSHClient()
 
