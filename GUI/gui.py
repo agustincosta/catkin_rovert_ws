@@ -1,4 +1,4 @@
-import sys,os
+import sys,os, subprocess
 from PyQt4 import QtGui, QtCore
 import paramiko, socket, time
 
@@ -91,7 +91,8 @@ class MainWindow(QtGui.QMainWindow):
 		os.system("rosnode kill -a")
 
 def connection(ventana):
-	hostname = "ubiquityrobot"
+	date_now = subprocess.check_output(['date'])
+	hostname = "ubiquityrobot.local"
 	port = 22
 	username = "ubuntu"
 	password = "ubuntu"
@@ -102,7 +103,7 @@ def connection(ventana):
 	s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, 
 	socket.SOCK_DGRAM)]][0][1]]) if l][0][0]
 	print host_ip
-	command = "source catkin_ws/devel/setup.bash ; export ROS_MASTER_URI=http://"+ host_ip +":11311; roslaunch rover_2dnav rpi_localized_config.launch"
+	command = "date -s "+ date_now + " source catkin_ws/devel/setup.bash ; export ROS_MASTER_URI=http://"+ host_ip +":11311; roslaunch rover_2dnav rpi_localized_config.launch"
 
 	try:
 		ssh = paramiko.SSHClient()
