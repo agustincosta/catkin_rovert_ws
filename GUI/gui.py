@@ -22,7 +22,8 @@ class SecondaryWindow(QtGui.QMainWindow):
 		self.guardaMapa.clicked.connect(self.mapSaver)
 	
 	def changeMode(self):
-		os.system("rosnode kill move_base; rosnode kill explore_lite; rosnode kill rviz; rosnode kill teleop &")
+		os.system("rosnode kill move_base; rosnode kill explore_lite; rosnode kill explore; rosnode kill rviz; rosnode kill teleop &")
+		os.system("rostopic pub -1 /cmd_vel geometry_msgs/Twist  '{linear:  {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0,y: 0.0,z: 0.0}}'")
 		self.close()
 
 	def mapSaver(self):
@@ -91,12 +92,6 @@ class MainWindow(QtGui.QMainWindow):
 		os.system("rosnode kill -a")
 
 def connection(ventana):
-	date_now = subprocess.check_output(['date'])
-	
-
-	date_now2 = date_now[:len(date_now)-1]
-	string = 'sudo date -s \"' + date_now2 + '\";'
-	print(string)
 	hostname = "ubiquityrobot.local"
 	port = 22
 	username = "ubuntu"
@@ -125,6 +120,10 @@ def connection(ventana):
 
 		while channel.recv_ready():
 			channel.recv(1024)
+		date_now = subprocess.check_output(['date'])
+		date_now2 = date_now[:len(date_now)-1]
+		string = 'sudo date -s \"' + date_now2 + '\";'
+		print(string)
 		channel.sendall(string)
 		channel.sendall("source catkin_ws/devel/setup.bash\n")
 		#channel.sendall('export ROS_IP=10.58.0.1')
