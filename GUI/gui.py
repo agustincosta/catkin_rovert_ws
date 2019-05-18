@@ -92,18 +92,25 @@ class MainWindow(QtGui.QMainWindow):
 
 def connection(ventana):
 	date_now = subprocess.check_output(['date'])
+	
+
+	date_now2 = date_now[:len(date_now)-1]
+	string = 'sudo date -s \"' + date_now2 + '\";'
+	print(string)
 	hostname = "ubiquityrobot.local"
 	port = 22
 	username = "ubuntu"
 	password = "ubuntu"
 	host_name = socket.gethostname() 
 	host_ip = socket.gethostbyname(host_name) 
+
 	host_ip = [l for l in ([ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] 
 	if not ip.startswith("127.")][:1], [[(s.connect(('8.8.8.8', 53)), 
 	s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, 
 	socket.SOCK_DGRAM)]][0][1]]) if l][0][0]
 	print host_ip
-	command = "date -s "+ date_now + " source catkin_ws/devel/setup.bash ; export ROS_MASTER_URI=http://"+ host_ip +":11311; roslaunch rover_2dnav rpi_localized_config.launch"
+	os.system('export ROS_IP=' + host_ip +';')
+	command = ' source catkin_ws/devel/setup.bash ; export ROS_MASTER_URI=http://'+ host_ip +':11311; roslaunch rover_2dnav rpi_localized_config.launch'
 
 	try:
 		ssh = paramiko.SSHClient()
@@ -119,8 +126,9 @@ def connection(ventana):
 
 		while channel.recv_ready():
 			channel.recv(1024)
+		channel.sendall(string)
 		channel.sendall("source catkin_ws/devel/setup.bash\n")
-
+		#channel.sendall('export ROS_IP=10.58.0.1')
 		channel.sendall("export ROS_MASTER_URI=http://"+ host_ip +":11311\n")
 		channel.sendall("echo $ROS_MASTER_URI\n")
 		print channel.recv(1024)
