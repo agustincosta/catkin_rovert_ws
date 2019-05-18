@@ -75,7 +75,7 @@ float us_max_range = 2.00;
 bool rosserial_online = false;
 
 /**
-   * PID
+   * PID*********************************************************************************************************
    */
 #if CONTROL_ACTIVO
 
@@ -202,6 +202,11 @@ ros::Time current_time;
 ros::Time last_time;
 
 void initIMU(){
+  /**
+   * Verificia e inicializa la comunicacion con la IMU y el Mag.
+   * 
+   * Debe ser llamada en Setup().
+   */
   // Read the WHO_AM_I register, this is a good test of communication
   byte c = myIMU.readByte(MPU9250_ADDRESS, WHO_AM_I_MPU9250);
 
@@ -263,6 +268,12 @@ void initIMU(){
 }
 
 void initROSnodeWithMessages(int baudrate){
+  /**
+   * Inicializa las variables para el nodo ROS
+   * 
+   * debe ser llamado en Setup().
+   */
+  
   nh.initNode();
   nh.getHardware()->setBaud(baudrate);
 
@@ -325,6 +336,10 @@ void initROSnodeWithMessages(int baudrate){
 }
 
 void initPID(){
+  /**
+   * Ajusta las variables de PID y la tasa de muestreo. 
+   * Se debe llamar en Setup().
+   */
   #if CONTROL_ACTIVO
   rueda1PID.SetMode(AUTOMATIC);
   rueda2PID.SetMode(AUTOMATIC);
@@ -345,10 +360,16 @@ void initPID(){
 }
 
 void initUS(){
-  
+  /**
+   * Inicializa variables de US.
+   */
 }
 
 void setPinModes(){
+  /**
+   * Ajusta el modo de los pines y sus valores iniciales, debe ser llamada en Setup()
+   */
+  
   pinMode(pwm_1, OUTPUT);
   pinMode(dir_1, OUTPUT);
   pinMode(pwm_2, OUTPUT);
@@ -373,7 +394,9 @@ void setPinModes(){
 
 
 void desplazamiento(double x, double y, double th, double w1, double w2, double w3, double w4, double Ts, float radio, float a, float b, double pos[6]){
-  
+  /**
+   * Realiza la odometria del robot al calcular el movimeinto del robot integrando la velocidad de cada rueda.
+   */
   double dt = Ts;
 
   
@@ -396,7 +419,9 @@ void desplazamiento(double x, double y, double th, double w1, double w2, double 
 }
 
 void lecturaEncoders(long *encoders){
-
+  /**
+   * Utilizando la libreria Encoder se lee el contador de cada rueda y luego se resetea para mantener la cuenta chica.
+   */
   encoders[0] = rueda1.read();
   encoders[1] = rueda2.read();
   encoders[2] = rueda3.read();
@@ -420,6 +445,9 @@ void lecturaEncoders(long *encoders){
 }
 
 void velocity_cb(const geometry_msgs::Twist& vel){
+  /**
+   * Esta funcion es invocada cuando llega un mensaje de cmd_vel. Toma las variables en el mensaje y las pasa a globales para que otras funciones del codigo puedan acceder.
+   */
      vel_x = vel.linear.x ;
      vel_y = vel.linear.y;
      vel_ang = vel.angular.z;
@@ -429,6 +457,12 @@ void velocity_cb(const geometry_msgs::Twist& vel){
 }
 
 void actualizacionSetPointDeVelocidadMotores(){
+  /**
+   * Se calcula segun el comando recibio de velocidades la velocidad de cada motor.
+   * 
+   * Por los experimentos realizados se setea una velocidad maxima para no tener incoherencias.
+   */
+  
     //Estas ecuaciones pasan de las velocidades relativas a las velocidades de cada rueda.
     w1 = (1/R)*(- vel_x - vel_y + -(A+B)*vel_ang) ;
     w2 = (1/R)*(+ vel_x - vel_y + (-A-B)*vel_ang) ;
@@ -459,7 +493,15 @@ void actualizacionSetPointDeVelocidadMotores(){
  }
 
 void comandoMotor(int direccion, int pwmPin, float velocidad){
-
+  /**
+   * Esta funcion setea un nivel pwm segun la velocidad pasada como variables. Se debe especificar el pin de direccion y de pwm del motor DC.
+   * 
+   * Dependiendo si la velocidad es negativa o positiva se setea el estado del pin de direccion.
+   * 
+   * La velocidad se pasa a pwm segun experimetnos que determinaron la velocidad maxima de las ruedas, 
+   * a partir de eso se normaliza por esa velocidad y se multiplica por 255 que es el valor maximo para el analogWrite.
+   */
+   
   if(velocidad<0){
       velocidad= -velocidad ;
       digitalWrite(direccion, LOW); //controls the direction the motor
@@ -476,7 +518,10 @@ void comandoMotor(int direccion, int pwmPin, float velocidad){
  }
 
 void actualizacionDeVelocidadMotores(){
-  //El cambio de signo esta dado para acomodar el sentido de las ruedas con relacion a como fue conectado el motor al driver.
+    /**
+     * Esto setea el pwm para controlar la velocidad y direccion de cada rueda mediante la funcion comandoMotor.
+     */
+  
     #if FEEDFOWARD_CONTROL
     comandoMotor(derAdelante[0],derAdelante[1],w1_comando+w1);
     comandoMotor(izqAdelante[0],izqAdelante[1],w2_comando+w2);
@@ -491,7 +536,9 @@ void actualizacionDeVelocidadMotores(){
   }
 
 void medirUltrasonidos(){
- 
+  /**
+   * Se verifica si la medida de US ya fue relevada, en caso de ser verdad para todos los ultrasonidos se lanza un nuevo set de medidas.
+   */
     if(!adel.isMeasureReady() && !izq.isMeasureReady() && !der.isMeasureReady() && !atr.isMeasureReady()){
         adel.startMeasure();
         izq.startMeasure();
@@ -501,6 +548,9 @@ void medirUltrasonidos(){
 }
 
 void envioMensajeUltraSonidos(){
+  /**
+   * Se procesan las variables globales y se arman los mensajes de las medidas de US.
+   */
  
 
     /*  //ESTO HAY QUE CAMBIARLO *********************************************
@@ -537,32 +587,45 @@ void envioMensajeUltraSonidos(){
     dist_der /= muestras_us;
     dist_atr /= muestras_us; 
     */
+
+    /**
+     * Se evaluan antes del if, porque si no el AND enlentece el sistema ya que isMeasureReady tambien ayuda a cortar por tiempo. 
+     * Se podria arreglar con logica de or pero se decidio simpilificar la lectura del codigo.
+     */
+    bool adelReady = adel.isMeasureReady();
+    bool izqReady = izq.isMeasureReady();
+    bool derReady = der.isMeasureReady();
+    bool atrReady = atr.isMeasureReady();
     
-   if(adel.isMeasureReady() && izq.isMeasureReady() && der.isMeasureReady() && atr.isMeasureReady()){
+   if(adelReady && izqReady && derReady && atrReady){
+        //Pasaje de medida de cm a Metros 
         dist_adel = adel.lastMeasure()/100;
         dist_izq = izq.lastMeasure()/100;
         dist_der = der.lastMeasure()/100;
         dist_atr = atr.lastMeasure()/100;
-        
-    		//Adelante
+
+        /**
+         * Armado y publicacion del mensaje de US.
+         */
+    		//US Adelante
     		us_adel_msg.range = dist_adel;
     		us_adel_msg.header.seq++;
     		us_adel_msg.header.stamp = nh.now();
     		pub_us_adel.publish(&us_adel_msg);
     
-    		//Izquierda
+    		//US Izquierda
     		us_izq_msg.range = dist_izq;
     		us_izq_msg.header.seq++;
     		us_izq_msg.header.stamp = nh.now();
     		pub_us_izq.publish(&us_izq_msg);
     
-    		//Derecha
+    		//US Derecha
     		us_der_msg.range = dist_der;
     		us_der_msg.header.seq++;
     		us_der_msg.header.stamp = nh.now();
     		pub_us_der.publish(&us_der_msg);
     
-    		//Atras
+    		//US Atras
     		us_atr_msg.range = dist_atr;
     		us_atr_msg.header.seq++;
     		us_atr_msg.header.stamp = nh.now();
@@ -571,6 +634,9 @@ void envioMensajeUltraSonidos(){
 }
 
 void medirIMUyMAG(){
+  /**
+   * El nombre de la funcion explica todo, pero se relevan los datos de IMU y Magnetometro utilizando la libreria de Sparkfun.
+   */
   
   // If intPin goes high, all data registers have new data
   // On interrupt, check if data ready interrupt
@@ -632,8 +698,14 @@ void medirIMUyMAG(){
 }
 
 void encodersUpdateyCalculoOdometria(long Ts){
+  /**
+   *  Se relevan los contadores de los 4 Encoders y se calulca la velocidad angular de cada rueda gracias al periodo Ts qen milisegundos.
+   *  
+   *  Luego se calcula el desplazamiento del robot segun las ecuaciones tratadas en la documentacion.
+   *  
+   *  
+   */
   
-  //Revisar. 
   lecturaEncoders(encoderArray);
   
   w1_medida = encoderArray[0]*2.0*PI/(8.4*Ts);
@@ -663,6 +735,11 @@ void encodersUpdateyCalculoOdometria(long Ts){
 }
 
 void checkROSconnection(){
+  /**
+   * Verifica que el Teensy esta conectado a la red de ROS, de no ser asi setea todas las variables de control y posicion a 0.
+   * Esto puede entrometerse si se desconecta el teensy en la mitad de un mapeo, pero no deberia suceder.
+   * 
+   */
   if (nh.connected())
   {
     x = pos[0];
@@ -690,6 +767,12 @@ void checkROSconnection(){
 }
 
 void envioMensajeOdometria(){
+  /**
+   * Se procesan todas las variables de odometria y se publica un mensaje odom.
+   * 
+   * Hay un define que permite activar o desactivar el envio de transformadas entre ejes. Este se debe poner de acuerdo a los que se tenga en el rpi corriendo.
+   * Si se tiene robot_pose_ekf entonces esa parte del codigo no debe estar activada. Si no se desa utilizar ese nodo entonces el tf de odometria puede ser realizado desde el teensy.
+   */
   qx = 0;
   qy = 0;
   qz = sin(th/2);
@@ -755,6 +838,9 @@ void envioMensajeOdometria(){
 }
 
 void envioMensajeIMUyMAG(){
+  /**
+   * Se envia el mensaje de IMU y Magnetometro mediane el nodo de ROS.
+   */
   
   imu_msg.linear_acceleration.x = myIMU.ax/g;
   imu_msg.linear_acceleration.y = myIMU.ay/g;
@@ -784,6 +870,10 @@ void envioMensajeIMUyMAG(){
 }
 
 void staticTransforms(){
+  /**
+   * Envia transofrmaciones estaticas entre la base del robot y el lidar.
+   */
+  
   //Transformacion del frame del lidar al centro del robot
   laser_trans.header.frame_id = "/base_link";
   laser_trans.child_frame_id = "/base_laser";
@@ -802,6 +892,15 @@ void staticTransforms(){
 }
 
 void controlDeRuedas(){
+  /**
+   * Esta funcion define a que velocidad debe girar cada rueda. 
+   * Las velocidades seteadas provienen de la funcione ActualizacionSetPointDeVelocidadMotores. y esta las calcula segun las velocidades relativas seteadas desde fuera del teensy a travez del mensaje 
+   * cmd_vel.
+   * 
+   * Segun si se requiere un control activo o no se puede activar o desactivar el PID, tambien se puede modificar el tipo de lazo de control, pero se recomienda utilizar el PID solo.
+   * El tuneo del pid se debe realizr con cuidado.
+   */
+  
   //Control de ruedas
   #if CONTROL_ACTIVO
   
@@ -810,8 +909,8 @@ void controlDeRuedas(){
    */
    //Esto quiere corregir el mismatch entre la odometria y el movimiento del comando
   
-  w1_medida = -w1_medida;
-  w3_medida = -w3_medida;
+  w1_medida = -w1_medida; //Esto cambia el sentido de la medida para que el sentido del PID sea coherente
+  w3_medida = -w3_medida; // idem w1
   rueda1PID.Compute();
   rueda2PID.Compute();
   rueda3PID.Compute();
@@ -844,6 +943,10 @@ void controlDeRuedas(){
 }
 
 void cerrandoElLoopROS(){
+  /**
+   * Esta funcion es requerida en el loop principal del probgrama y resulve temas de comunicacion y de buffers de ROS.
+   */
+  
   nh.spinOnce();
  // last_time = current_time;
 }

@@ -55,15 +55,15 @@ void setup() {
   //ACA HAY QUE CAMBIAR PARA TODAS LAS RUEDAS GIREN EN EL MISMO SENTIDO, O SEA QUE TODAS APORTEN A IR PARA ADELANTE O ATRAS
   #if ADELANTE
       Serial.println ("ADELANTE");
-      digitalWrite(dir_1, HIGH);
+      digitalWrite(dir_1, LOW);
       digitalWrite(dir_2, HIGH);
-      digitalWrite(dir_3, HIGH);
+      digitalWrite(dir_3, LOW);
       digitalWrite(dir_4, HIGH);
     #else
       Serial.println ("ATRAS");
-      digitalWrite(dir_1, LOW);
+      digitalWrite(dir_1, HIGH);
       digitalWrite(dir_2, LOW);
-      digitalWrite(dir_3, LOW);
+      digitalWrite(dir_3, HIGH);
       digitalWrite(dir_4, LOW);
     #endif
     Serial.println("inputPWM   wi  wo1  wo2  w3o wo4");
@@ -109,9 +109,9 @@ void loop() {
   lecturaEncoders(encoderArray);
   //Serial.println(Ts);
    w_medida1 = encoderArray[0]*2.0*PI/(float)(8.4*Ts); //Ts esta en milis por eso 8.4 en vez de 8400
-   w_medida2 = encoderArray[0]*2.0*PI/(float)(8.4*Ts); //Ts esta en milis por eso 8.4 en vez de 8400
-   w_medida3 = encoderArray[0]*2.0*PI/(float)(8.4*Ts); //Ts esta en milis por eso 8.4 en vez de 8400
-   w_medida4 = encoderArray[0]*2.0*PI/(float)(8.4*Ts); //Ts esta en milis por eso 8.4 en vez de 8400
+   w_medida2 = encoderArray[1]*2.0*PI/(float)(8.4*Ts); //Ts esta en milis por eso 8.4 en vez de 8400
+   w_medida3 = encoderArray[2]*2.0*PI/(float)(8.4*Ts); //Ts esta en milis por eso 8.4 en vez de 8400
+   w_medida4 = encoderArray[3]*2.0*PI/(float)(8.4*Ts); //Ts esta en milis por eso 8.4 en vez de 8400
    Serial.print(input);
    Serial.print(" ");
    Serial.print((input*VEL_ANG_MAX_RUEDAS/255));
