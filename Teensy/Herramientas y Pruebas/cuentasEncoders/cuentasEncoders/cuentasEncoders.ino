@@ -1,4 +1,3 @@
-#include <PID_v1.h>
 #include <Encoder.h>
 
 /*Motores*/
@@ -13,15 +12,10 @@
 #define pwm_4 38
 #define dir_4 39
 
-#define pwm_pin pwm_1
-#define dir_pin dir_1
-
 int pulsosAdelante = 5;                      //Cantidad de escalones de velocidad que recibirá el robot para avanzar
 float duracionPulso = 2000;                  //Duración de los escalones de velocidad
 int velocidadPWM[5] = {50,100,150,200,250};  //5 velocidades para experimento
 int indice;
-
-float VEL_ANG_MAX_RUEDAS = 8.507;
 
 long encoderArray[4] = {0,0,0,0};
 long totalCuentas[4] = {0,0,0,0};
@@ -33,9 +27,8 @@ Encoder rueda3(9,10);
 Encoder rueda4(12,11);
 
 
+
 void setup() {
-  // put your setup code here, to run once:
-   
   pinMode(pwm_1, OUTPUT);
   pinMode(dir_1, OUTPUT);
   pinMode(pwm_2, OUTPUT);
@@ -44,13 +37,12 @@ void setup() {
   pinMode(dir_3, OUTPUT);
   pinMode(pwm_4, OUTPUT);
   pinMode(dir_4, OUTPUT);
- 
+  
   Serial.begin(115200);
   delay(10000);
-  Serial.print("EXPERIMENTO: Deslizamiento por pulsos");
-  
-}
+  Serial.println("EXPERIMENTO: Cuentas de encoders");
 
+}
 
 void loop() {
 
@@ -80,7 +72,7 @@ void loop() {
       analogWrite(pwm_3, velocidadPWM[j]);
       analogWrite(pwm_4, velocidadPWM[j]);
   
-      delay(duracionPulso);                 //Delay de duracion del pulso
+      delay(duracionPulso);        //Delay de duracion del pulso
 
       Serial.println("Velocidad: " + String(velocidadPWM[j]) + " - Pasada nro " + String(i+1));
 
@@ -91,9 +83,17 @@ void loop() {
       analogWrite(pwm_3, 0);
       analogWrite(pwm_4, 0);
   
-      delay(1000);                          //Delay entre pulsos
+      while (Serial.available() > 0)
+      {
+        Serial.read();
+      }
+        
+      while (Serial.available() == 0)         //Esperar a que haya un byte para leer del serial
+      { 
+        delay(1000);
+      }
     }
-  
+    
     //Movimiento hacia atras
     digitalWrite(dir_1, HIGH);               //Seteo de pines para movimiento hacia atras
     digitalWrite(dir_2, LOW);
@@ -106,12 +106,53 @@ void loop() {
     analogWrite(pwm_4, velocidadPWM[j]);
   
     delay(duracionPulso*pulsosAdelante);    //Duracion del movimiento hacia atras
+    
+    Serial.println("Velocidad: " + String(velocidadPWM[j]) + " - Retorno");
+
+    lecturaEncoders(encoderArray);
   
     analogWrite(pwm_1, 0);                //Frenado
     analogWrite(pwm_2, 0);
     analogWrite(pwm_3, 0);
     analogWrite(pwm_4, 0);
 
-    delay(5000);
+    while (Serial.available() > 0)
+    {
+      Serial.read();
+    }
+      
+    while (Serial.available() == 0)         //Esperar a que haya un byte para leer del serial
+    { 
+      delay(1000);
+    }
   }
+  
+  
+  
+  
+
+}
+
+void lecturaEncoders(long *encoders){
+  /**
+   * Utilizando la libreria Encoder se lee el contador de cada rueda y luego se resetea para mantener la cuenta chica.
+   */
+  encoders[0] = rueda1.read();
+  encoders[1] = rueda2.read();
+  encoders[2] = rueda3.read();
+  encoders[3] = rueda4.read();
+
+  Serial.println("Encoders:");
+  Serial.println(encoders[0]);
+  Serial.println(encoders[1]);
+  Serial.println(encoders[2]);
+  Serial.println(encoders[3]);
+
+
+  //resetea el contador del objeto
+  rueda1.write(0);
+  rueda2.write(0);
+  rueda3.write(0);
+  rueda4.write(0);
+ 
 }

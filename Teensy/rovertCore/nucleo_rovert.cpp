@@ -86,8 +86,9 @@ bool rosserial_online = false;
   //double Kp= 0.69, Ki =27.1119 ,Kd = 0.00 ;// Bastante bien PIDSampleTime 50ms
 
   //double Kp= 2.092, Ki =29.934 ,Kd = 0.009 ;// Bastante bien PIDSampleTime 50ms
-  double Kp=1.068, Ki =17.225 ,Kd = 0.00 ;// Bastante bien PIDSampleTime 50ms
-  //double Kp= 0.215, Ki =4.032 ,Kd = 0.00 ;// Bastante bien PIDSampleTime 50ms
+  //double Kp=1.068, Ki =17.225 ,Kd = 0.00 ;// Bastante bien PIDSampleTime 50ms //ULTIMO USADO
+  double Kp= 0.215, Ki =4.032 ,Kd = 0.00 ;// Bastante bien PIDSampleTime 50ms //El mas lento
+  //double Kp= 3.234, Ki = 98 ,Kd = 0.00 ; //El teorico pero que anda bien como el culo
   
   #endif
   PID rueda1PID(&w1_medida,&w1_comando,&w1,Kp, Ki, Kd, DIRECT);
